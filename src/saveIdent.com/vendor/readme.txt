@@ -1,0 +1,1 @@
+This vendor directory is to contain things that are needed globally! Not things that are specific to a specific service!
