@@ -1,4 +1,4 @@
-package connection
+package elasticService
 
 import (
 	"github.com/Zaba505/golang-generic-pool/src"
@@ -37,15 +37,19 @@ func (db *ElasticSearchDB) ChangeIPTo(newIp string) {
 	db.dbIp = newIp
 }
 
-type GeoLocation struct {
+type Location struct {
 	Type string		`json:"type"`
 	Cors []float32	`json:"coordinates"`
+}
+
+type GeoLocation struct {
+	Loc Location	`json:"location"`
 }
 
 type UpdateESDocType struct {
 	DeviceId int		`json:"device_id"`
 	Status int			`json:"status"`
-	Geo GeoLocation		`json:"location"`
+	Geo GeoLocation		`json:"geo"`
 }
 
 func (db *ElasticSearchDB) Add(update dto.UpdateRequestDTO) error {
@@ -61,8 +65,9 @@ func (db *ElasticSearchDB) Add(update dto.UpdateRequestDTO) error {
 
 	defer db.clientPool.PutFishieBack(client)
 
-	loc := GeoLocation{"point", []float32{update.Lon, update.Lat}}
-	shitToAdd := UpdateESDocType{update.Device_id, update.Status, loc}
+	loc := Location{"point", []float32{update.Lon, update.Lat}}
+	geoLoc := GeoLocation{loc}
+	shitToAdd := UpdateESDocType{update.Device_id, update.Status, geoLoc}
 
 	b, err := json.Marshal(shitToAdd)
 	if err != nil {
