@@ -7,6 +7,7 @@ import (
 	"log"
 	"io/ioutil"
 	"encoding/json"
+	"saveIdent.com/common/redisHelper"
 )
 
 //needs to cache into ES
@@ -37,7 +38,7 @@ func HandlePositionUpdate(res http.ResponseWriter, req *http.Request){
 
 	//todo dump into elastic search
 
-	//todo dump into the queue
+	redisHelper.Push(string(bytes))
 
 	//todo wait for check
 

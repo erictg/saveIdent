@@ -6,12 +6,13 @@ import (
 	"saveIdent.com/server/deviceInputService/handler"
 	"fmt"
 	"net/http"
+	"saveIdent.com/common/redisHelper"
 )
 
 func main(){
 
 	//registry.Init()
-
+	redisHelper.Init("localhost:6379")
 	router := mux.NewRouter()
 
 	router.HandleFunc("/rest/device/update", handler.HandlePositionUpdate).Methods("POST")
