@@ -1,6 +1,4 @@
-package query
-
-import "saveIdent.com/server/deviceInputService/dto"
+package elasticService
 
 type ShardInfo struct {
 	Total int		`json:"total"`
@@ -13,7 +11,7 @@ type DocInfo struct {
 	Type string					`json:"_type"`
 	Id string					`json:"_id"`
 	Score float32				`json:"_score"`
-	Source dto.UpdateRequestDTO	`json:"_source"`
+	Source UpdateESDocType		`json:"_source"`
 	Sort []string				`json:"sort"`
 }
 
@@ -23,7 +21,7 @@ type HitsInfo struct {
 	Hits []DocInfo		`json:"hits"`
 }
 
-type SearchInfoResponse struct {
+type SearchDeviceIdResponse struct {
 	Took int			`json:"took"`
 	TimeOut bool		`json:"timed_out"`
 	Shards ShardInfo	`json:"_shards"`
@@ -50,15 +48,23 @@ type MustGeoStatusMatch struct {
 	Term TermMatch		`json:"term"`
 }
 
-type GeoBox struct {
+type Bound struct {
+	Lat float32		`json:"lat"`
+	Lng float32		`json:"lon"`
+}
 
+type BoxBounds struct {
+	UpperLeft	Bound	`json:"top_left"`
+	BottomRight	Bound	`json:"bottom_right"`
+}
+
+type GeoBox struct {
+	Bounds BoxBounds 	`json:"geo.location"`
 }
 
 type FilterGeo struct {
 	BoundingBox GeoBox	`json:"geo_bounding_box"`
 }
-
-type FilterGeoStatus struct {}
 
 type BoolGeo struct {
 	M MustGeoMatch		`json:"must"`
@@ -67,7 +73,7 @@ type BoolGeo struct {
 
 type BoolGeoStatus struct {
 	M MustGeoStatusMatch	`json:"must"`
-	F FilterGeoStatus		`json:"filter"`
+	F FilterGeo				`json:"filter"`
 }
 
 type QueryDeviceId struct {
@@ -96,3 +102,9 @@ type SearchGeoStatusRequest struct {
 	Query QueryGeoStatusShit	`json:"query"`
 	Sort []MatchUID				`json:"sort"`
 }
+
+func (db *ElasticSearchDB) SearchDeviceId(deviceId int) {}
+
+func (db *ElasticSearchDB) SearchGeo(upperLeft, bottomRight Bound) {}
+
+func (db *ElasticSearchDB) SearchGeoStatus(upperLeft, bottomRight Bound, stat int) {}
