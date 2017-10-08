@@ -25,12 +25,52 @@ services:
     volumes:
       - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
 
-  activeMonitor:
+  active_monitor:
     build:
       context: ./src/saveIdent.com
       dockerfile: activeMonitorService.dockerfile
-    expose:
-      - 1992:1992
+    ports:
+      - "1992:1992"
     depends_on:
       - redis
-      - 
+      - elasticsearch
+      - user_team_db
+  input_service:
+    build:
+      context: ./src/saveIdent.com
+      dockerfile: input.dockerfile
+    ports:
+      - "1990:1990"
+    depends_on:
+      - redis
+      - elasticsearch
+      - user_team_db
+  sql_service:
+    build:
+      context: ./src/saveIdent.com
+      dockerfile: sqlService.dockerfile
+    ports:
+      - "1991:1991"
+    depends_on:
+      - redis
+      - elasticsearch
+      - user_team_db
+  analytics:
+    build:
+      context: ./saveIdent-cluster
+      dockerfile: .
+    ports:
+      - "1993:1993"
+    depends_on:
+      - redis
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: .
+    ports:
+      - "80:80"
+    depends_on:
+      - analytics
+      - sql_service
+      - input_service
+      - active_monitor
