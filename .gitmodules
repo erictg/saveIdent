@@ -4,3 +4,6 @@
 [submodule "golang-generic-pool"]
 	path = golang-generic-pool
 	url = https://github.com/Zaba505/golang-generic-pool
+[submodule "SaveIdentWeb"]
+	path = SaveIdentWeb
+	url = https://github.com/Zaba505/SaveIdentWeb.git
