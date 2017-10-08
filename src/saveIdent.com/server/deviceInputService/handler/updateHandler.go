@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"encoding/json"
 	"saveIdent.com/common/redisHelper"
+	"saveIdent.com/server/deviceInputService/connectionES"
 )
 
 //needs to cache into ES
@@ -36,9 +37,12 @@ func HandlePositionUpdate(res http.ResponseWriter, req *http.Request){
 
 	log.Println(reqDto)
 
-	//todo dump into elastic search
+	connectionES.ElasticSearch.Add(reqDto)
 
-	redisHelper.Push(string(bytes))
+	if reqDto.Status == 1{
+		redisHelper.Push(reqDto)
+	}
+
 
 	//todo wait for check
 

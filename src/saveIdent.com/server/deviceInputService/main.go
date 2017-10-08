@@ -7,10 +7,13 @@ import (
 	"fmt"
 	"net/http"
 	"saveIdent.com/common/redisHelper"
+	"saveIdent.com/server/deviceInputService/connectionES"
 )
 
 func main(){
 
+	//todo fix the shit
+	connectionES.Init("localhost:5401")
 	//registry.Init()
 	redisHelper.Init("localhost:6379")
 	router := mux.NewRouter()

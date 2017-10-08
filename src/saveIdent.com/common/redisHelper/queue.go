@@ -5,9 +5,10 @@ import (
 
 	"github.com/go-redis/redis"
 	"log"
+	"saveIdent.com/server/deviceInputService/dto"
 )
 
-var pushQueue chan string
+var pushQueue chan dto.UpdateRequestDTO
 var redisClient *redis.Client
 
 func Init(addr string){
@@ -16,16 +17,16 @@ func Init(addr string){
 		Password:"",
 		DB:0,
 	})
-	pushQueue = make(chan  string, 100)
+	pushQueue = make(chan  dto.UpdateRequestDTO, 100)
 
 	go PushRoutine(pushQueue)
 }
 
-func Push(string string){
+func Push(string dto.UpdateRequestDTO){
 	pushQueue <- string
 }
 
-func PushRoutine(queue chan string){
+func PushRoutine(queue chan dto.UpdateRequestDTO){
 	log.Println("inside of the routine")
 	for{
 
@@ -33,7 +34,9 @@ func PushRoutine(queue chan string){
 		case str := <-queue:
 			log.Println("pushing to redis!")
 			log.Println(str)
-			redisClient.RPush("inputQueue", str)
+			redisClient.RPush("inputLatQueue", str.Lat)
+			redisClient.RPush("inputLonQueue", str.Lon)
+			redisClient.RPush("inputIdQueue", str.Device_id)
 		}
 
 
@@ -41,27 +44,3 @@ func PushRoutine(queue chan string){
 }
 
 
-type queue struct{
-	q []string
-}
-
-func(q *queue) Init(){
-	q.q = make([]string, 0)
-}
-
-func (q *queue) Push(str string){
-	q.q = append(q.q, str)
-}
-//
-//func Pop(q chan []string) (string, error){
-//	if .IsEmpty(){
-//		return "", errors.New("queue is empty")
-//	}
-//	toReturn := q.q[0]
-//	q.q = q.q[1:]
-//	return toReturn, nil
-//}
-
-func (q *queue) IsEmpty() bool{
-	return len(q.q) == 0
-}
