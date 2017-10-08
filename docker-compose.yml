@@ -1,4 +1,4 @@
-version: "3.3"
+version: "3.1"
 services:
   redis:
     image: redis
@@ -57,7 +57,7 @@ services:
       - user_team_db
   analytics:
     build:
-      context: ./saveIdent-cluster
+      context: ./saveIdent-cluster/.
       dockerfile: .
     ports:
       - "1993:1993"
@@ -68,7 +68,7 @@ services:
       context: ./nginx
       dockerfile: .
     ports:
-      - "80:80"
+      - "8080:8080"
     depends_on:
       - analytics
       - sql_service
