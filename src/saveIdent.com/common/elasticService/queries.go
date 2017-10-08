@@ -141,9 +141,16 @@ func (db *ElasticSearchDB) SearchDeviceId(deviceId int) (SearchResponse, error) 
 }
 
 func (db *ElasticSearchDB) SearchGeo(upperLeft, bottomRight Bound) (SearchResponse, error) {
+
+	var searchResponse SearchResponse
+
+	return searchResponse, nil
 }
 
 func (db *ElasticSearchDB) SearchGeoStatus(upperLeft, bottomRight Bound, stat int) (SearchResponse,  error) {
+	var searchResponse SearchResponse
+
+	return searchResponse, nil
 }
 
 func sendJson(db *ElasticSearchDB, searchRequest interface{}) (*http.Response, error) {
