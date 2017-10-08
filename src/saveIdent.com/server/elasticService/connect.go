@@ -79,7 +79,7 @@ func (db *ElasticSearchDB) Add(update dto.UpdateRequestDTO) error {
 		}
 	}
 
-	resp, err := client.Post(db.dbIp + UPDATE, "application/json", bytes.NewBuffer(b))
+	resp, err := client.Post(db.dbIp + UPDATE, JSON, bytes.NewBuffer(b))
 	defer resp.Body.Close()
 
 	if err != nil {

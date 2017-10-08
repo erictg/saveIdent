@@ -1,5 +1,18 @@
 package elasticService
 
+import (
+	"net/http"
+	"fmt"
+	"errors"
+	"bytes"
+	"encoding/json"
+)
+
+const (
+	SEARCH = "/_search"
+	JSON = "application/json"
+)
+
 type ShardInfo struct {
 	Total int		`json:"total"`
 	Success int		`json:"successful"`
@@ -21,7 +34,7 @@ type HitsInfo struct {
 	Hits []DocInfo		`json:"hits"`
 }
 
-type SearchDeviceIdResponse struct {
+type SearchResponse struct {
 	Took int			`json:"took"`
 	TimeOut bool		`json:"timed_out"`
 	Shards ShardInfo	`json:"_shards"`
@@ -103,8 +116,61 @@ type SearchGeoStatusRequest struct {
 	Sort []MatchUID				`json:"sort"`
 }
 
-func (db *ElasticSearchDB) SearchDeviceId(deviceId int) {}
+func (db *ElasticSearchDB) SearchDeviceId(deviceId int) (SearchResponse, error) {
 
-func (db *ElasticSearchDB) SearchGeo(upperLeft, bottomRight Bound) {}
+	var searchResponse SearchResponse
 
-func (db *ElasticSearchDB) SearchGeoStatus(upperLeft, bottomRight Bound, stat int) {}
+	// Construct search request
+	searchRequest := SearchDeviceIDRequest{QueryDeviceId{MatchDeviceID{deviceId}}, nil}
+
+	// Send request
+	resp, err := sendJson(db, &searchRequest)
+	defer resp.Body.Close()
+
+	// If it failed give up
+	if err != nil {
+		if db.errLogger != nil {
+			db.errLogger.Error(err, "Failed doing sumthing in search device id")
+		}
+		return searchResponse, err
+	}
+
+	// If it didn't fail get result
+	decoder := json.NewDecoder(resp.Body)
+	return searchResponse, decoder.Decode(&searchResponse)
+}
+
+func (db *ElasticSearchDB) SearchGeo(upperLeft, bottomRight Bound) (SearchResponse, error) {
+}
+
+func (db *ElasticSearchDB) SearchGeoStatus(upperLeft, bottomRight Bound, stat int) (SearchResponse,  error) {
+}
+
+func sendJson(db *ElasticSearchDB, searchRequest interface{}) (*http.Response, error) {
+	// Get client from fishie pool
+	client, ok := db.clientPool.GetFishie().(http.Client)
+	if !ok {
+		if db.errLogger != nil {
+			db.errLogger.Warn(1, "No free fishie")
+		}
+		fmt.Println("No free fishie")
+		return &http.Response{}, errors.New("no free fishie")
+	}
+
+	defer db.clientPool.PutFishieBack(client)
+
+	// Now shove that json request into a buffer
+	var b bytes.Buffer
+	encoder := json.NewEncoder(&b)
+
+	err := encoder.Encode(searchRequest)
+	if err != nil {
+		if db.errLogger != nil {
+			db.errLogger.Error(err, "Failed enccoding json into buffer")
+		}
+		return &http.Response{}, err
+	}
+
+	// Send request
+	return client.Post(db.dbIp + UPDATE + SEARCH, JSON, &b)
+}
