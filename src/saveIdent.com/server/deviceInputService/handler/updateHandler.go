@@ -37,9 +37,10 @@ func HandlePositionUpdate(res http.ResponseWriter, req *http.Request){
 
 	log.Println(reqDto)
 
-	connectionES.ElasticSearch.Add(reqDto)
+
 
 	if reqDto.Status == 1{
+		connectionES.ElasticSearch.Add(reqDto)
 		redisHelper.Push(reqDto)
 	}
 

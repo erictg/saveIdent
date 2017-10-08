@@ -7,7 +7,6 @@ services:
       - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_ROOT_PASSWORD: mypassword
       MYSQL_USER: dbuser
-      MYSQL_PASSWORD: userpass
-      MYSQL_DATABASE: user_team_db
+      MYSQL_PASSWORD: dbuserpass
+      MYSQL_DATABASE: user_device_db

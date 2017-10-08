@@ -7,9 +7,9 @@ import (
 	"bufio"
 )
 
-var ElasticSearch *connection.ElasticSearchDB
+var ElasticSearch *elasticService.ElasticSearchDB
 
 func Init(addr string){
 	logger := logger.NewLogger(bufio.NewWriter(os.Stdout), "	")
-	ElasticSearch = connection.New(addr, 2, logger)
+	ElasticSearch = elasticService.New(addr, 2, logger)
 }

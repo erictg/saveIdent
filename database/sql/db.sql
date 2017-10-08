@@ -7,7 +7,9 @@ create TABLE users(
   name VARCHAR(255) not NULL,
   password VARCHAR(255) NOT NULL,
   address VARCHAR(255) NOT NULL,
-  email VARCHAR(255) NOT NULL
+  email VARCHAR(255) NOT NULL,
+  created DATETIME DEFAULT CURRENT_TIMESTAMP
+
 );
 
 create index users_name_index on users(name);
@@ -61,5 +63,10 @@ CREATE TABLE emergency_service_group_users_relation_table(
   users_id int UNSIGNED,
   FOREIGN KEY (group_id) REFERENCES emergency_service_group(id) on DELETE CASCADE,
   FOREIGN KEY (users_id) REFERENCES users(id) on DELETE CASCADE
-)
-  }
+);
+
+create table DetectedEvent(
+  id int UNSIGNED AUTO_INCREMENT PRIMARY KEY not NULL ,
+  centerLat float not null,
+  centerLon float not NULL
+);
