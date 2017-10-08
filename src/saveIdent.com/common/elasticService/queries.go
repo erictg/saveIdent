@@ -106,7 +106,7 @@ type SearchDeviceIDRequest struct {
 	Sort []MatchUID		`json:"sort"`
 }
 
-type SearchGeoQueryRequest struct {
+type SearchGeoRequest struct {
 	Query QueryGeoShit		`json:"query"`
 	Sort []MatchUID			`json:"sort"`
 }
@@ -117,7 +117,6 @@ type SearchGeoStatusRequest struct {
 }
 
 func (db *ElasticSearchDB) SearchDeviceId(deviceId int) (SearchResponse, error) {
-
 	var searchResponse SearchResponse
 
 	// Construct search request
@@ -141,8 +140,10 @@ func (db *ElasticSearchDB) SearchDeviceId(deviceId int) (SearchResponse, error) 
 }
 
 func (db *ElasticSearchDB) SearchGeo(upperLeft, bottomRight Bound) (SearchResponse, error) {
-
 	var searchResponse SearchResponse
+
+	// Construct search request
+	searchRequest := SearchGeoRequest{}
 
 	return searchResponse, nil
 }
