@@ -143,15 +143,82 @@ func (db *ElasticSearchDB) SearchGeo(upperLeft, bottomRight Bound) (SearchRespon
 	var searchResponse SearchResponse
 
 	// Construct search request
-	searchRequest := SearchGeoRequest{}
+	searchRequest := SearchGeoRequest{
+		QueryGeoShit{
+			BoolGeo{
+				MustGeoMatch{
+					nil,
+				},
+				FilterGeo{
+					GeoBox{
+						BoxBounds{
+							upperLeft,
+							bottomRight,
+						},
+					},
+				},
+			},
+		},
+		nil,
+	}
 
-	return searchResponse, nil
+	// Send request
+	resp, err := sendJson(db, &searchRequest)
+	defer resp.Body.Close()
+
+	// If it failed give up
+	if err != nil {
+		if db.errLogger != nil {
+			db.errLogger.Error(err, "Failed doing sumthing in search device id")
+		}
+		return searchResponse, err
+	}
+
+	// If it didn't fail get result
+	decoder := json.NewDecoder(resp.Body)
+	return searchResponse, decoder.Decode(&searchResponse)
 }
 
 func (db *ElasticSearchDB) SearchGeoStatus(upperLeft, bottomRight Bound, stat int) (SearchResponse,  error) {
 	var searchResponse SearchResponse
 
-	return searchResponse, nil
+	// Construct search request
+	searchRequest := SearchGeoStatusRequest{
+		QueryGeoStatusShit{
+			BoolGeoStatus{
+				MustGeoStatusMatch{
+					TermMatch{
+						stat,
+					},
+				},
+				FilterGeo{
+					GeoBox{
+						BoxBounds{
+							upperLeft,
+							bottomRight,
+						},
+					},
+				},
+			},
+		},
+		nil,
+	}
+
+	// Send request
+	resp, err := sendJson(db, &searchRequest)
+	defer resp.Body.Close()
+
+	// If it failed give up
+	if err != nil {
+		if db.errLogger != nil {
+			db.errLogger.Error(err, "Failed doing sumthing in search device id")
+		}
+		return searchResponse, err
+	}
+
+	// If it didn't fail get result
+	decoder := json.NewDecoder(resp.Body)
+	return searchResponse, decoder.Decode(&searchResponse)
 }
 
 func sendJson(db *ElasticSearchDB, searchRequest interface{}) (*http.Response, error) {
