@@ -1,7 +1,36 @@
-version "3.3"
+version: "3.3"
 services:
-  mqtt-broker:
-    image: eclipse-mosquitto
+  redis:
+    image: redis
     ports:
-      - "1883:1883"
-      - "9001:9001"
+      - 6379:6379
+  user_team_db:
+      build: ./database/sql/.
+      ports:
+        - "3306:3306"
+      environment:
+        MYSQL_ROOT_PASSWORD: rootpass
+        MYSQL_USER: dbuser
+        MYSQL_PASSWORD: dbuserpass
+        MYSQL_DATABASE: user_device_db
+  elasticsearch:
+    build:
+      context: ./database/elasticSearch
+      dockerfile: .
+    ports:
+      - "9201:9200"
+    environment:
+      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+    tty: true
+    volumes:
+      - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+
+  activeMonitor:
+    build:
+      context: ./src/saveIdent.com
+      dockerfile: activeMonitorService.dockerfile
+    expose:
+      - 1992:1992
+    depends_on:
+      - redis
+      - 

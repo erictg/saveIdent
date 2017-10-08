@@ -15,7 +15,7 @@ func main(){
 	//todo fix the shit
 	connectionES.Init("localhost:5401")
 	//registry.Init()
-	redisHelper.Init("localhost:6379")
+	redisHelper.Init("redis:6379")
 	router := mux.NewRouter()
 
 	router.HandleFunc("/rest/device/update", handler.HandlePositionUpdate).Methods("POST")

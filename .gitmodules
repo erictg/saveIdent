@@ -1,3 +1,6 @@
 [submodule "saveIdent-cluster"]
 	path = saveIdent-cluster
 	url = https://github.com/nikitawootten/saveIdent-cluster.git
+[submodule "golang-generic-pool"]
+	path = golang-generic-pool
+	url = https://github.com/Zaba505/golang-generic-pool
